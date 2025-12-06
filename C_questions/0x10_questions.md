@@ -82,17 +82,109 @@
   1.正常的變數在函式內呼叫本來就會消失，所以加入static才不會消失阿! --> 那函式內的呼叫，外部檔案可以extern存取他嗎?
   
   2.應該要強調"區域外"可以用同名，例如: 
-    ```C
-  int a = 50;       // 全域變數
-  void foo(void) {
-    static int a = 3; // 區域靜態變數
+  ```C
+int a = 50;       // 全域變數
+void foo(void) {
+static int a = 3; // 區域靜態變數
   }
-    ```
+  ```
   但是這也不重要，應為正常情況下的變數都可以。
   
   所以他的特點就會是無法讓其他檔案透過extern存取他，也就是隱藏起來。
   
-  3.
+  3.可能當下不太清楚static在"函式"的用法，下面是例子:
+  ```C
+#include <stdio.h>
+
+static void secret() {
+    printf("This is a static function, only visible in this file.\n");
+}
+
+void call_secret() {
+    secret();  // OK
+}
+  ```
+
+---
+- 請解釋 volatile 這個關鍵字的含義。 並且，請列舉 三種 務必要使用 volatile 的具體場景（Scenario）。」
+- 
+### 我的答案:
+  volatile 提醒編譯器，不要對該變數做最佳化，每次都要重新讀取他的值。
+  
+  例子:
+  
+  1.周邊裝置的硬體暫存器，透過高低電位決定狀態，如果該程式的變數指向該暫存器的記憶體位置，那就會影響該程式變數。
+  
+  2.中斷程式會改動到的變數。
+  
+  3.多執行緒下，多個程式共享的變數。
+  
+### 補充:
+volatile 告訴編譯器，該變數的值可能會被其他因素改變，因此不該對其進行最佳化，每次存取都須要直接讀取記憶體資料。 
+
+```c
+///可能會最佳會為while(1)
+int flag = 0; //正確為:volatile int flag = 0;
+
+int main() {
+    while (flag == 0) { 
+        // 等中斷改變 flag
+    }
+}
+```
+當flag應為中斷程式改變數值時，如果沒有加入volatile，while迴圈可能被最佳化成無限迴圈。
+
+例2:
+
+ISR 中會存取到的"非自動變數"（Non-automatic variables）」或是「全域變數（Global variables）」。
+
+自動變數如下:
+```c
+void foo() {
+    int x = 10;   // automatic variable
+}
+```
+函數結束就會被回收。
+
+非自動變數如下:
+
+- 全域變數
+
+- static 變數（無論在函數內或函數外）
+
+- 記憶體映射暫存器
+
+- heap 分配的變數（比較少用在 ISR）
+
+這些變數的特性是：
+
+  在 ISR 執行時仍然存在，可以被 ISR 修改或讀取。
+
+---
+請問：一個變數可以同時是 const 也是 volatile 嗎？ （例如：const volatile int x;）
+
+如果是，請舉一個實際的例子說明為什麼會有這種怪異的組合。
+
+如果否，請解釋為什麼這兩個關鍵字互斥。」
+
+### 我的答案:
+  可以，當我要定義某個只能唯讀但是數值可能會變動的變數時，我可以用const volatile int 變數。 
+  
+  例1: #define ADC_DR   (*(const volatile uint32_t*) 0x4001244C )
+       這個數值會被"硬體"更新，不能用最佳化，且不想被寫入。
+
+
+      
+
+ 
+
+
+
+
+
+
+
+   
 
 
 
