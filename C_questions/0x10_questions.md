@@ -478,7 +478,117 @@ tPS p3, p4;
 <br/>
 <br/>
 
-p2不會變成指標 dPS 
+我的答案:
+
+#define只是單純的文字變換，typedef是型別變換，所以
+
+```c
+#define dPS struct s *
+dPS p1, p2; //等同於struct s * p1, p2; 
+```
+
+這時候p1會指向結構指標，p2只是實體結構變數 (Structure Instance)。
+
+```c
+typedef struct s * tPS;  
+tPS p3, p4; //等同於struct s * p3 ; struct s * p4;
+```
+
+定義指標型別時，永遠優先選擇 typedef 。
+
+--- 
+<br/>
+- 請看這段程式碼，原作者想要取得一個 『位元全為 1』 的變數（也就是 0 的一補數，1's complement of zero）：
+
+```c
+unsigned int zero = 0;
+unsigned int compzero = 0xFFFF; /* 預期結果是 ...1111 */
+```
+
+<br/>
+<br/>
+
+我的答案:
+
+1.在32bit上會變成0x0000FFFF
+
+2.unsigned int compzero = ~0 ; 
+
+---
+
+<br/>
+
+- 請用變數名稱 a，分別寫出以下 3 種 宣告：
+
+  一個 指向整數的指標 (A pointer to an integer)。
+  
+  一個 包含 10 個指標的陣列，每個指標都指向一個整數 (An array of 10 pointers to integers)。
+  
+  一個 函式指標 (Function Pointer)，該函式接收一個整數參數，並回傳一個整數 (A pointer to a function that takes an integer as an    argument and returns an integer)。
+  
+ （請直接寫出三行 C 程式碼）」
+
+<br/>
+<br/>
+
+
+我的答案:
+
+1.int *a;
+
+2.int * a[10];
+
+3.int (*a)(int); #函式指標 (這題不熟)
+
+---
+<br/>
+
+- 請告訴我，以下這兩個宣告有什麼具體差異？ 也就是說，在這兩種情況下，誰是唯讀的（Read-only）？誰是可以修改的？
+
+  1.const int *ptr;
+
+  2.int * const ptr;」
+
+<br/>
+<br/>
+
+我的答案:
+
+1. int唯讀,但可以更改*ptr的值
+  
+2. ptr唯讀,但可以更改int的值
+
+#錯誤解析:
+1. *ptr指向的值不能更改，但是可以改變*ptr指向的地址。
+
+---
+
+<br/>
+
+- 在嵌入式系統的主程式（Main Loop）中，我們通常需要一個跑不停的無窮迴圈。
+
+  請寫出你慣用的無窮迴圈寫法。 （提示：通常有 while 和 for 兩種流派，請選一種寫出來，並告訴我為什麼有些資深工程師或工具（如 Lint）會偏
+
+  好 for 的寫法？） 」
+
+<br/>
+<br/>
+
+我的答案:
+
+while(1) {} 或 for(;;){} 
+
+#補充
+
+- 關鍵字：Lint（靜態分析工具）：
+
+  許多靜態分析工具（如 PC-Lint）在檢查 while(1) 時，會跳出一個 Warning，叫作「Condition is always true（條件永遠為真）」。這雖然沒錯，但在追求 Zero Warning 的高品質專案中，這是個雜訊。
+
+而 for(;;) 被 C 語言標準和 K&R 定義為正規的無窮迴圈寫法，工具通常會將其視為「Intended (故意的)」，不會報錯 。
+
+---
+  
+
 
 
 
